@@ -18,6 +18,7 @@
         "@fullcalendar/timegrid": "^6.1.19",
         "@hookform/resolvers": "^5.2.2",
         "axios": "^1.12.2",
+        "dotenv": "^17.2.3",
         "fullcalendar": "^6.1.19",
         "jwt-decode": "^4.0.0",
         "react": "^19.1.1",
