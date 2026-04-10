@@ -1,8 +1,6 @@
 import { Draggable } from "@fullcalendar/interaction";
 import { useEffect, useRef } from "react";
-import ButtonClientsList from "./ButtonClientsList";
-import editClientImg from "../../assets/img/editClient.png";
-import deleteClientImg from "../../assets/img/deleteClient.png";
+import ClientMenu from "./ClientMenu";
 
 function ClientList({ client, handleEditClientForm, handleDeleteClient, onAddClient }) {
     const draggableInstanceRef = useRef(null);
@@ -75,18 +73,11 @@ function ClientList({ client, handleEditClientForm, handleDeleteClient, onAddCli
                             {c.phoneNumber}
                         </p>
                     </div>
-                    <div className="flex gap-1.5 opacity-60 transition-opacity group-hover:opacity-100 max-sm:gap-1">
-                        <ButtonClientsList
-                            text={"Editar Cliente"}
-                            functionOnClick={() => handleEditClientForm(c)}
-                            imgSource={editClientImg}
-                            className="btn-edit"
-                        />
-                        <ButtonClientsList
-                            text={"Eliminar Cliente"}
-                            functionOnClick={() => handleDeleteClient(c)}
-                            imgSource={deleteClientImg}
-                            className="btn-delete"
+                    <div className="opacity-60 transition-opacity group-hover:opacity-100">
+                        <ClientMenu
+                            client={c}
+                            onEdit={handleEditClientForm}
+                            onDelete={handleDeleteClient}
                         />
                     </div>
                 </div>
