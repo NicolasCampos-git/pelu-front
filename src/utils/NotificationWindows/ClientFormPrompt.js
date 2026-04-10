@@ -61,25 +61,37 @@ const clientSchema = z.object({
         .refine(isValidArgentinePhone, {
             message: "El número ingresado no es válido para Argentina",
         }),
+    fecha_nacimiento: z
+        .string()
+        .optional()
+        .transform((val) => val || null),
 });
 
-const buildHtml = (name = "", phone = "") => {
+const buildHtml = (name = "", phone = "", fechaNacimiento = "") => {
     // Remover el + del phone si existe para mostrarlo solo en el prefijo
     const phoneNumber = phone.startsWith("+") ? phone.slice(1) : phone;
     return `
-  <input 
-    type="text" 
-    id="client-name" 
-    class="swal2-input client-form-input" 
-    placeholder="Nombre y apellido" 
+  <input
+    type="text"
+    id="client-name"
+    class="swal2-input client-form-input"
+    placeholder="Nombre y apellido"
     value="${name.replace(/"/g, "&quot;")}">
   <div class="client-form-phone-wrapper">
-    <input 
-      type="tel" 
-      id="client-phone" 
-      class="swal2-input client-form-input client-form-phone" 
-      placeholder="+54 11 1234 5678" 
+    <input
+      type="tel"
+      id="client-phone"
+      class="swal2-input client-form-input client-form-phone"
+      placeholder="+54 11 1234 5678"
       value="${phoneNumber.replace(/"/g, "&quot;")}">
+  </div>
+  <div class="client-form-birthday-wrapper">
+    <label for="client-birthday" class="client-form-label">Fecha de nacimiento (opcional)</label>
+    <input
+      type="date"
+      id="client-birthday"
+      class="swal2-input client-form-input"
+      value="${fechaNacimiento.replace(/"/g, "&quot;")}">
   </div>
 `;
 };
@@ -109,7 +121,7 @@ const handlePhoneInput = (phoneInput) => {
  * @returns {Promise<Object|null>} - Datos del cliente (nombre_completo, telefono) o null si se cancela
  */
 export async function promptAddClient() {
-    let nameInput, phoneInput;
+    let nameInput, phoneInput, birthdayInput;
     const result = await ThemedSwal.fire({
         title: "Agregar Cliente",
         html: buildHtml(),
@@ -122,6 +134,7 @@ export async function promptAddClient() {
             const popup = ThemedSwal.getPopup();
             nameInput = popup.querySelector("#client-name");
             phoneInput = popup.querySelector("#client-phone");
+            birthdayInput = popup.querySelector("#client-birthday");
 
             handlePhoneInput(phoneInput);
 
@@ -133,11 +146,12 @@ export async function promptAddClient() {
         preConfirm: () => {
             const nombre_completo = nameInput.value.trim();
             const telefono = phoneInput.value.trim();
+            const fecha_nacimiento = birthdayInput.value.trim();
 
-            // Validar con Zod
             const validation = clientSchema.safeParse({
                 nombre_completo,
                 telefono,
+                fecha_nacimiento,
             });
 
             if (!validation.success) {
@@ -165,11 +179,12 @@ export async function promptAddClient() {
  * @returns {Promise<Object|null>} - Datos actualizados del cliente o null si se cancela/no hay cambios
  */
 export async function promptEditClient(initial) {
-    let nameInput, phoneInput;
+    let nameInput, phoneInput, birthdayInput;
     const initialPhone = initial?.phoneNumber || "";
+    const initialBirthday = initial?.fechaNacimiento || "";
     const result = await ThemedSwal.fire({
         title: "Editar Cliente",
-        html: buildHtml(initial?.title || "", initialPhone),
+        html: buildHtml(initial?.title || "", initialPhone, initialBirthday),
         confirmButtonText: "Actualizar",
         cancelButtonText: "Cancelar",
         showCancelButton: true,
@@ -179,6 +194,7 @@ export async function promptEditClient(initial) {
             const popup = ThemedSwal.getPopup();
             nameInput = popup.querySelector("#client-name");
             phoneInput = popup.querySelector("#client-phone");
+            birthdayInput = popup.querySelector("#client-birthday");
 
             handlePhoneInput(phoneInput);
 
@@ -190,11 +206,12 @@ export async function promptEditClient(initial) {
         preConfirm: () => {
             const nombre_completo = nameInput.value.trim();
             const telefono = phoneInput.value.trim();
+            const fecha_nacimiento = birthdayInput.value.trim();
 
-            // Validar con Zod
             const validation = clientSchema.safeParse({
                 nombre_completo,
                 telefono,
+                fecha_nacimiento,
             });
 
             if (!validation.success) {
@@ -213,7 +230,8 @@ export async function promptEditClient(initial) {
                 : `+${initialPhone}`;
             if (
                 validation.data.nombre_completo === (initial?.title || "") &&
-                validation.data.telefono === normalizedInitialPhone
+                validation.data.telefono === normalizedInitialPhone &&
+                (validation.data.fecha_nacimiento || "") === initialBirthday
             ) {
                 ThemedSwal.showValidationMessage("No hay cambios para guardar");
                 return false;

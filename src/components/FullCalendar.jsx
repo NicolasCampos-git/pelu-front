@@ -47,7 +47,8 @@ const Calendar = ({ clientList = [], setIsDraggingEvent, onShiftsLoaded }) => {
                 fecha_fin
             );
 
-            const formattedEvents = response.listado_turnos.map((turno) => ({
+            const turnos = response.data ?? response.listado_turnos;
+            const formattedEvents = turnos.map((turno) => ({
                 id: turno.id,
                 title: turno.cliente.nombre_completo,
                 start: turno.fecha_hora_inicio_turno,

@@ -58,6 +58,7 @@ const Clients = () => {
                         id: c.id,
                         title: c.nombre_completo,
                         phoneNumber: c.telefono,
+                        fechaNacimiento: c.fecha_nacimiento ?? "",
                         editable: true,
                         esta_eliminado: c.esta_eliminado,
                     })
@@ -104,6 +105,7 @@ const Clients = () => {
                     id: created.data.id,
                     title: created.data.nombre_completo,
                     phoneNumber: created.data.telefono,
+                    fechaNacimiento: created.data.fecha_nacimiento ?? "",
                     editable: true,
                     esta_eliminado: created.data.esta_eliminado,
                 },
@@ -127,6 +129,7 @@ const Clients = () => {
                           ...c,
                           title: updated.data.nombre_completo,
                           phoneNumber: updated.data.telefono,
+                          fechaNacimiento: updated.data.fecha_nacimiento ?? "",
                       }
                     : c
             );
@@ -154,51 +157,17 @@ const Clients = () => {
 
     const handleReminderSettings = async () => {
         try {
-            const messageResponse = await remindersService.getMessage();
-            const currentMessage = messageResponse.data?.mensaje ?? messageResponse.mensaje ?? "";
-            
             const antelacionResponse = await remindersService.getAntelacion();
             const currentHours = antelacionResponse.data?.horas_antelacion ?? antelacionResponse.horas_antelacion ?? 1;
 
-            const result = await openReminderModal(currentMessage, currentHours);
+            const result = await openReminderModal(currentHours);
             if (!result) return;
 
-            const { message, hours } = result;
-            const messageChanged = message !== currentMessage;
-            const hoursChanged = hours !== currentHours;
-
-            const updates = [];
-
-            if (messageChanged) {
-                updates.push(
-                    remindersService.updateMessage(message)
-                        .then(() => ({ type: "message", success: true }))
-                        .catch((error) => ({ type: "message", success: false, error }))
-                );
-            }
-
-            if (hoursChanged) {
-                updates.push(
-                    remindersService.updateAntelacion(hours)
-                        .then(() => ({ type: "hours", success: true }))
-                        .catch((error) => ({ type: "hours", success: false, error }))
-                );
-            }
-
-            if (updates.length === 0) return;
-
-            const results = await Promise.all(updates);
-            const allSuccess = results.every((r) => r.success);
-
-            if (allSuccess) {
-                showToast("success", "Recordatorio actualizado correctamente");
-            } else {
-                const failedUpdates = results.filter((r) => !r.success).map((r) => r.type);
-                showToast("error", `Error al actualizar: ${failedUpdates.join(", ")}`);
-            }
+            await remindersService.updateAntelacion(result.hours);
+            showToast("success", "Recordatorio actualizado correctamente");
         } catch (error) {
             console.error("Error con configuración de recordatorio:", error);
-            showToast("error", "Error al obtener configuración de recordatorio");
+            showToast("error", "Error al actualizar configuración de recordatorio");
         }
     };
 

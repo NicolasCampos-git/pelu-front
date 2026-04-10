@@ -4,39 +4,32 @@ import { createRoot } from "react-dom/client";
 import { createRef } from "react";
 
 /**
- * Hook para mostrar modal combinado de edición de mensaje y antelación
- * @returns {function} - Función que abre el modal: async (currentMessage, currentHours) => ({ message, hours } | null)
+ * Hook para mostrar modal de edición de antelación de recordatorio
+ * @returns {function} - Función que abre el modal: async (currentHours) => ({ hours } | null)
  */
 export function useReminderCombinedModal() {
-    return async (currentMessage, currentHours) => {
+    return async (currentHours) => {
         return new Promise((resolve) => {
             const componentRef = createRef();
             let root = null;
 
             ThemedSwal.fire({
-                title: "Editar Recordatorio",
+                title: "Configurar Recordatorio",
                 html: '<div id="reminder-combined-container"></div>',
                 confirmButtonText: "Guardar",
                 cancelButtonText: "Cancelar",
                 showCancelButton: true,
                 reverseButtons: true,
                 focusConfirm: false,
-                width: 600,
+                width: 500,
                 didOpen: async () => {
                     const container = document.getElementById("reminder-combined-container");
-                    
-                    const handleCancel = () => {
-                        ThemedSwal.close();
-                    };
 
-                    // Renderizar componente React en el contenedor
                     root = createRoot(container);
                     root.render(
                         <ReminderCombinedPrompt
                             ref={componentRef}
-                            currentMessage={currentMessage}
                             currentHours={currentHours}
-                            onCancel={handleCancel}
                         />
                     );
                 },
