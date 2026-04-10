@@ -1,29 +1,10 @@
 import ThemedSwal from "../swalTheme";
 import { z } from "zod";
 
-// Validación de teléfono argentino
-const isValidArgentinePhone = (phone) => {
-    // Remover el + si existe para validar
+// Validación básica de teléfono (la validación estricta la hace el backend)
+const isValidPhone = (phone) => {
     const cleanPhone = phone.replace(/^\+/, "");
-
-    // Formatos válidos para Argentina:
-    // +54 9 11 1234-5678 (móvil CABA)
-    // +54 9 351 123-4567 (móvil Córdoba)
-    // +54 11 1234-5678 (fijo CABA)
-    // +54 351 123-4567 (fijo Córdoba)
-
-    // Debe empezar con 54 (código de Argentina)
-    if (!cleanPhone.startsWith("54")) {
-        return false;
-    }
-
-    // Después del 54, debe tener entre 8 y 13 dígitos más
-    // (código de área + número)
-    const remainingDigits = cleanPhone.slice(2);
-    const digitCount = remainingDigits.length;
-
-    // Validar que tenga la longitud correcta (mín 8, máx 13)
-    return digitCount >= 8 && digitCount <= 13;
+    return /^\d{8,15}$/.test(cleanPhone);
 };
 
 // Schema de validación con Zod (basado en el DTO del backend)
@@ -58,8 +39,8 @@ const clientSchema = z.object({
             const cleaned = val.replace(/\+/g, "");
             return `+${cleaned}`;
         })
-        .refine(isValidArgentinePhone, {
-            message: "El número ingresado no es válido para Argentina",
+        .refine(isValidPhone, {
+            message: "El número de teléfono no es válido",
         }),
     fecha_nacimiento: z
         .string()
@@ -71,27 +52,33 @@ const buildHtml = (name = "", phone = "", fechaNacimiento = "") => {
     // Remover el + del phone si existe para mostrarlo solo en el prefijo
     const phoneNumber = phone.startsWith("+") ? phone.slice(1) : phone;
     return `
-  <input
-    type="text"
-    id="client-name"
-    class="swal2-input client-form-input"
-    placeholder="Nombre y apellido"
-    value="${name.replace(/"/g, "&quot;")}">
-  <div class="client-form-phone-wrapper">
-    <input
-      type="tel"
-      id="client-phone"
-      class="swal2-input client-form-input client-form-phone"
-      placeholder="+54 11 1234 5678"
-      value="${phoneNumber.replace(/"/g, "&quot;")}">
-  </div>
-  <div class="client-form-birthday-wrapper">
-    <label for="client-birthday" class="client-form-label">Fecha de nacimiento (opcional)</label>
-    <input
-      type="date"
-      id="client-birthday"
-      class="swal2-input client-form-input"
-      value="${fechaNacimiento.replace(/"/g, "&quot;")}">
+  <div class="client-form-container">
+    <div class="client-form-field">
+      <label for="client-name" class="client-form-label">Nombre y apellido</label>
+      <input
+        type="text"
+        id="client-name"
+        class="swal2-input client-form-input"
+        placeholder="Ej: Juan Pérez"
+        value="${name.replace(/"/g, "&quot;")}">
+    </div>
+    <div class="client-form-field">
+      <label for="client-phone" class="client-form-label">Teléfono</label>
+      <input
+        type="tel"
+        id="client-phone"
+        class="swal2-input client-form-input client-form-phone"
+        placeholder="Ej: 5491112345678"
+        value="${phoneNumber.replace(/"/g, "&quot;")}">
+    </div>
+    <div class="client-form-field">
+      <label for="client-birthday" class="client-form-label">Fecha de nacimiento <span class="client-form-optional">(opcional)</span></label>
+      <input
+        type="date"
+        id="client-birthday"
+        class="swal2-input client-form-input"
+        value="${fechaNacimiento.replace(/"/g, "&quot;")}">
+    </div>
   </div>
 `;
 };
@@ -224,20 +211,29 @@ export async function promptEditClient(initial) {
                 return false;
             }
 
-            // Evitar guardar si no cambió nada
+            // Solo enviar los campos que cambiaron
             const normalizedInitialPhone = initialPhone.startsWith("+")
                 ? initialPhone
                 : `+${initialPhone}`;
-            if (
-                validation.data.nombre_completo === (initial?.title || "") &&
-                validation.data.telefono === normalizedInitialPhone &&
-                (validation.data.fecha_nacimiento || "") === initialBirthday
-            ) {
+            const changes = {};
+
+            if (validation.data.nombre_completo !== (initial?.title || "")) {
+                changes.nombre_completo = validation.data.nombre_completo;
+            }
+            if (validation.data.telefono !== normalizedInitialPhone) {
+                changes.telefono = validation.data.telefono;
+            }
+            if ((validation.data.fecha_nacimiento || "") !== initialBirthday) {
+                changes.fecha_nacimiento =
+                    validation.data.fecha_nacimiento || null;
+            }
+
+            if (Object.keys(changes).length === 0) {
                 ThemedSwal.showValidationMessage("No hay cambios para guardar");
                 return false;
             }
 
-            return validation.data;
+            return changes;
         },
     });
     if (result.isConfirmed) return result.value;

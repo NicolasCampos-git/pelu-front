@@ -114,14 +114,41 @@ Usa tokens del theme de Tailwind (App.css).
 CLIENT FORM
 ------------------------------
 */
-.client-form-input {
-    box-sizing: border-box !important;
+.client-form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    text-align: left;
+    padding: 0;
 }
 
-.client-form-phone-wrapper {
-    position: relative;
-    display: inline-block;
-    width: 100%;
+.client-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.client-form-label {
+    display: block;
+    font-weight: bold;
+    font-size: 0.85rem;
+    color: var(--color-content-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.client-form-optional {
+    font-weight: normal;
+    text-transform: none;
+    letter-spacing: normal;
+    opacity: 0.6;
+    font-size: 0.8rem;
+}
+
+.client-form-input {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    margin: 0 !important;
 }
 
 .client-form-phone {
