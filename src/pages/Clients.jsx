@@ -42,6 +42,7 @@ const Clients = () => {
     const [sortOrder, setSortOrder] = useState("asc");
     const [isDraggingEvent, setIsDraggingEvent] = useState(false);
     const [isLoadingData, setIsLoadingData] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(true);
     const [dataLoaded, setDataLoaded] = useState({
         clients: false,
         shifts: false,
@@ -203,99 +204,136 @@ const Clients = () => {
     };
 
     return (
-        <div className="grid h-screen grid-cols-[300px_1fr] gap-4 p-3 max-xl:grid-cols-[260px_1fr] max-xl:gap-3 max-xl:p-2.5 max-lg:grid-cols-[220px_1fr] max-lg:gap-2.5 max-lg:p-2 max-md:grid-cols-[200px_1fr] max-md:gap-2 max-md:p-1.5 max-sm:grid-cols-[160px_1fr] max-sm:gap-1.5 max-sm:p-1">
+        <div className="flex h-screen gap-4 p-3 max-xl:gap-3 max-xl:p-2.5 max-lg:gap-2.5 max-lg:p-2 max-md:gap-2 max-md:p-1.5 max-sm:gap-1.5 max-sm:p-1">
             {/* Panel lateral de clientes */}
-            <div className="relative flex min-h-0 flex-col rounded-lg border border-divider bg-surface p-3 text-content-primary shadow-strong max-md:p-2 max-sm:p-1.5">
-                {isDraggingEvent ? (
+            <div
+                className="relative flex min-h-0 shrink-0 flex-col overflow-hidden rounded-lg border border-divider bg-surface text-content-primary shadow-strong transition-[width] duration-300 ease-in-out"
+                style={{ width: sidebarOpen ? 300 : 44 }}
+            >
+                {isDraggingEvent && sidebarOpen ? (
                     <DeleteZone isVisible={isDraggingEvent} />
                 ) : (
                     <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-                        {/* Header: Add + Logout */}
-                        <div className="sticky top-0 z-2 flex items-center justify-between gap-2 border-b border-divider bg-surface pb-2">
-                            <div className="flex items-center gap-1">
-                                <ButtonClientsList
-                                    text={"Agregar Cliente"}
-                                    imgSource={addClientImg}
-                                    functionOnClick={handleAddClient}
-                                    className="btn-add"
-                                />
-                                <button
-                                    onClick={handleReminderSettings}
-                                    className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-none bg-transparent transition-all duration-200 hover:bg-accent/20 active:scale-95 max-lg:h-10 max-lg:w-10 max-md:h-9 max-md:w-9 max-sm:h-8 max-sm:w-8"
-                                    aria-label="Configurar Recordatorio"
-                                    title="Configurar Recordatorio"
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="h-6 w-6 text-content-primary opacity-90 transition-opacity hover:opacity-100 max-md:h-5 max-md:w-5 max-sm:h-[18px] max-sm:w-[18px]"
-                                    >
-                                        <circle cx="12" cy="12" r="10" />
-                                        <path d="M12 6v6l4 2" />
-                                    </svg>
-                                </button>
-                            </div>
-                            <ButtonClientsList
-                                text={"Cerrar Sesion"}
-                                imgSource={logoutImg}
-                                functionOnClick={handleLogOut}
-                                className="btn-logout"
-                            />
-                        </div>
-
-                        {/* Titulo + contador */}
-                        <div className="my-2 flex items-center justify-center gap-2">
-                            <h2 className="text-center font-title font-bold text-content-primary max-lg:text-lg max-md:text-base max-sm:text-sm">
-                                Clientes
-                            </h2>
-                            {!isLoadingData && (
-                                <span className="rounded-full bg-accent/15 px-2 py-0.5 text-xs font-semibold text-accent">
-                                    {activeClients.length}
-                                </span>
-                            )}
-                        </div>
-
-                        {/* Busqueda + Sort */}
-                        <div className="mb-3 flex w-full min-w-0 gap-2 max-sm:mb-2 max-sm:gap-1">
-                            <input
-                                type="text"
-                                value={filter}
-                                placeholder="Buscar cliente..."
-                                onChange={handleSearch}
-                                className="min-w-0 flex-1 rounded-md border border-divider bg-base px-2.5 py-2 text-sm text-content-primary placeholder-content-secondary transition-colors focus:border-accent focus:outline-none focus:ring-[3px] focus:ring-accent/18 max-lg:px-2 max-lg:py-1.5 max-lg:text-[13px] max-md:text-xs max-sm:p-1 max-sm:text-[11px]"
-                            />
+                        {/* Botón hamburguesa (siempre visible) */}
+                        <div className="flex shrink-0 items-center justify-center p-1">
                             <button
-                                type="button"
-                                onClick={toggleSortOrder}
-                                className="flex min-w-9 shrink-0 cursor-pointer items-center justify-center rounded-md border border-divider bg-base px-2 py-2 text-base text-content-primary transition-colors hover:border-accent/30 hover:bg-accent/10 max-lg:min-w-8 max-lg:text-sm max-sm:min-w-6 max-sm:p-1 max-sm:text-[13px]"
-                                title={sortOrder === "asc" ? "A-Z (ascendente)" : "Z-A (descendente)"}
+                                onClick={() => setSidebarOpen((v) => !v)}
+                                className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border-none bg-transparent text-content-primary transition-all duration-200 hover:bg-accent/20 active:scale-95"
+                                aria-label={sidebarOpen ? "Ocultar clientes" : "Mostrar clientes"}
+                                title={sidebarOpen ? "Ocultar clientes" : "Mostrar clientes"}
                             >
-                                {sortOrder === "asc" ? "↑" : "↓"}
+                                <svg
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="transition-transform duration-300"
+                                    style={{ transform: sidebarOpen ? "rotate(0deg)" : "rotate(180deg)" }}
+                                >
+                                    <path d="M15 18l-6-6 6-6" />
+                                </svg>
                             </button>
                         </div>
 
-                        {/* Lista de clientes o skeleton */}
-                        {isLoadingData ? (
-                            <LoadingSkeleton />
-                        ) : (
-                            <ClientList
-                                client={filteredClients}
-                                handleEditClientForm={handleEditClientForm}
-                                handleDeleteClient={handleDeleteClient}
-                                onAddClient={handleAddClient}
-                            />
-                        )}
+                        {/* Contenido colapsable */}
+                        <div
+                            className="flex min-h-0 flex-1 flex-col px-3 pb-3 transition-opacity duration-200 max-md:px-2 max-md:pb-2 max-sm:px-1.5 max-sm:pb-1.5"
+                            style={{
+                                opacity: sidebarOpen ? 1 : 0,
+                                pointerEvents: sidebarOpen ? "auto" : "none",
+                            }}
+                        >
+                            {/* Header: Add + Reminder + Logout */}
+                            <div className="sticky top-0 z-2 flex items-center justify-between gap-2 border-b border-divider bg-surface pb-2">
+                                <div className="flex items-center gap-1">
+                                    <ButtonClientsList
+                                        text={"Agregar Cliente"}
+                                        imgSource={addClientImg}
+                                        functionOnClick={handleAddClient}
+                                        className="btn-add"
+                                    />
+                                    <button
+                                        onClick={handleReminderSettings}
+                                        className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-none bg-transparent transition-all duration-200 hover:bg-accent/20 active:scale-95 max-lg:h-10 max-lg:w-10 max-md:h-9 max-md:w-9 max-sm:h-8 max-sm:w-8"
+                                        aria-label="Configurar Recordatorio"
+                                        title="Configurar Recordatorio"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            className="h-6 w-6 text-content-primary opacity-90 transition-opacity hover:opacity-100 max-md:h-5 max-md:w-5 max-sm:h-[18px] max-sm:w-[18px]"
+                                        >
+                                            <circle cx="12" cy="12" r="10" />
+                                            <path d="M12 6v6l4 2" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <ButtonClientsList
+                                    text={"Cerrar Sesion"}
+                                    imgSource={logoutImg}
+                                    functionOnClick={handleLogOut}
+                                    className="btn-logout"
+                                />
+                            </div>
+
+                            {/* Titulo + contador */}
+                            <div className="my-2 flex items-center justify-center gap-2">
+                                <h2 className="text-center font-title font-bold text-content-primary max-lg:text-lg max-md:text-base max-sm:text-sm">
+                                    Clientes
+                                </h2>
+                                {!isLoadingData && (
+                                    <span className="rounded-full bg-accent/15 px-2 py-0.5 text-xs font-semibold text-accent">
+                                        {activeClients.length}
+                                    </span>
+                                )}
+                            </div>
+
+                            {/* Busqueda + Sort */}
+                            <div className="mb-3 flex w-full min-w-0 gap-2 max-sm:mb-2 max-sm:gap-1">
+                                <input
+                                    type="text"
+                                    value={filter}
+                                    placeholder="Buscar cliente..."
+                                    onChange={handleSearch}
+                                    className="min-w-0 flex-1 rounded-md border border-divider bg-base px-2.5 py-2 text-sm text-content-primary placeholder-content-secondary transition-colors focus:border-accent focus:outline-none focus:ring-[3px] focus:ring-accent/18 max-lg:px-2 max-lg:py-1.5 max-lg:text-[13px] max-md:text-xs max-sm:p-1 max-sm:text-[11px]"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={toggleSortOrder}
+                                    className="flex min-w-9 shrink-0 cursor-pointer items-center justify-center rounded-md border border-divider bg-base px-2 py-2 text-base text-content-primary transition-colors hover:border-accent/30 hover:bg-accent/10 max-lg:min-w-8 max-lg:text-sm max-sm:min-w-6 max-sm:p-1 max-sm:text-[13px]"
+                                    title={sortOrder === "asc" ? "A-Z (ascendente)" : "Z-A (descendente)"}
+                                >
+                                    {sortOrder === "asc" ? "↑" : "↓"}
+                                </button>
+                            </div>
+
+                            {/* Lista de clientes o skeleton */}
+                            {isLoadingData ? (
+                                <LoadingSkeleton />
+                            ) : (
+                                <ClientList
+                                    client={filteredClients}
+                                    handleEditClientForm={handleEditClientForm}
+                                    handleDeleteClient={handleDeleteClient}
+                                    onAddClient={handleAddClient}
+                                />
+                            )}
+                        </div>
                     </div>
                 )}
             </div>
 
             {/* Calendario */}
-            <div>
+            <div className="min-w-0 flex-1">
                 <Calendar
                     clientList={client}
                     setIsDraggingEvent={setIsDraggingEvent}

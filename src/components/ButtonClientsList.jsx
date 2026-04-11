@@ -5,7 +5,7 @@ const variantStyles = {
     "btn-logout": "hover:bg-danger/15",
 };
 
-const ButtonClientsList = ({ text, functionOnClick, imgSource, className, icon }) => {
+const ButtonClientsList = ({ text, functionOnClick, imgSource, className }) => {
     const variant = variantStyles[className] || "hover:bg-accent/20";
 
     return (
@@ -15,13 +15,11 @@ const ButtonClientsList = ({ text, functionOnClick, imgSource, className, icon }
             aria-label={text}
             title={text}
         >
-            {icon || (
-                <img
-                    src={imgSource}
-                    alt={text}
-                    className="h-6 w-6 opacity-90 transition-opacity hover:opacity-100 max-md:h-5 max-md:w-5 max-sm:h-[18px] max-sm:w-[18px]"
-                />
-            )}
+            <img
+                src={imgSource}
+                alt={text}
+                className="h-6 w-6 opacity-90 transition-opacity hover:opacity-100 max-md:h-5 max-md:w-5 max-sm:h-[18px] max-sm:w-[18px]"
+            />
         </button>
     );
 };
