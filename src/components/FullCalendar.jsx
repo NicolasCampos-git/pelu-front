@@ -22,13 +22,38 @@ const Calendar = ({ clientList = [], setIsDraggingEvent, sidebarOpen, onShiftsLo
     const hasLoadedOnce = useRef(false);
 
     useEffect(() => {
-        if (calendarRef.current) {
+        if (!calendarRef.current) return;
+
+        const calendarApi = calendarRef.current.getApi();
+        if (!calendarApi) return;
+
+        const refreshSize = () => {
+            calendarApi.updateSize();
+        };
+
+        // La barra lateral anima su ancho (300ms); refrescamos al inicio y al final.
+        refreshSize();
+        const timeoutId = window.setTimeout(refreshSize, 320);
+
+        return () => {
+            window.clearTimeout(timeoutId);
+        };
+    }, [sidebarOpen]);
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (!calendarRef.current) return;
             const calendarApi = calendarRef.current.getApi();
             if (calendarApi) {
                 calendarApi.updateSize();
             }
-        }
-    }, [sidebarOpen]);
+        };
+
+        window.addEventListener("resize", handleResize);
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
 
     const clientes = clientList.filter((client) => !client.esta_eliminado);
 
