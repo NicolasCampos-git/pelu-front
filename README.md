@@ -19,7 +19,7 @@ App de gestión de turnos y clientes para peluquería. Construida con React 19 +
 npm run dev       # Servidor de desarrollo
 npm run build     # Build de producción
 npm run preview   # Preview del build
-npm run start     # Start para Railway (usa PORT)
+npm run start     # Servidor estático de producción (usa PORT)
 npm run lint      # Linter
 ```
 
@@ -28,8 +28,13 @@ npm run lint      # Linter
 El proyecto ya incluye configuracion para deploy automatico en Railway con [railway.json](railway.json):
 
 - `build`: Nixpacks
+- `buildCommand`: `npm ci --include=optional && npm run build`
 - `startCommand`: `npm run start`
 - Healthcheck en `/`
+
+### Requisito de Node
+
+Vite 7 requiere Node `20.19+` o `22.12+`. El proyecto define `engines` en [package.json](package.json) para evitar builds con Node 18.
 
 ### Variables de entorno en Railway
 
