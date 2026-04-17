@@ -34,8 +34,8 @@ El proyecto ya incluye configuracion para deploy automatico en Railway con [rail
 
 ### Requisito de Node
 
-Vite 7 requiere Node `20.19+` o `22.12+`. El proyecto define `engines` en [package.json](package.json) para evitar builds con Node 18.
-Ademas se fija Node 22 para Nixpacks en [nixpacks.toml](nixpacks.toml).
+Vite 7 requiere Node `20.19+` o `22.12+`. Este proyecto estandariza Node `22.12.0`.
+La version se fija en `engines` de [package.json](package.json) y en Nixpacks con [nixpacks.toml](nixpacks.toml).
 
 ### Variables de entorno en Railway
 
