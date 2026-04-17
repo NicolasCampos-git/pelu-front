@@ -27,15 +27,17 @@ npm run lint      # Linter
 
 El proyecto ya incluye configuracion para deploy automatico en Railway con [railway.json](railway.json):
 
-- `build`: Nixpacks
+- `build`: Railpack
 - `buildCommand`: `npm install --include=optional && npm run build`
 - `startCommand`: `npm run start`
 - Healthcheck en `/`
 
+Ademas se define [railpack.json](railpack.json) para fijar Node `22.12.0` y el start command de la imagen final.
+
 ### Requisito de Node
 
 Vite 7 requiere Node `20.19+` o `22.12+`. Este proyecto estandariza Node `22.12.0`.
-La version se fija en `engines` de [package.json](package.json) y en Nixpacks con [nixpacks.toml](nixpacks.toml).
+La version se fija en `engines` de [package.json](package.json) y en [railpack.json](railpack.json).
 
 ### Variables de entorno en Railway
 
