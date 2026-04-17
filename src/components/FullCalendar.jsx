@@ -4,7 +4,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import momentTimezonePlugin from "@fullcalendar/moment-timezone";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import shiftsService from "../services/shifts";
 import "../styles/calendar.css";
 import windowDelete from "../utils/NotificationWindows/ConfirmDelete";
@@ -15,11 +15,20 @@ import AlertError from "../utils/NotificationWindows/AlertError";
 import { promiseToast, showValidation } from "../utils/toastify/toastConfig";
 import { createDynamicMessage } from "../utils/toastify/toastMessages";
 
-const Calendar = ({ clientList = [], setIsDraggingEvent, onShiftsLoaded }) => {
+const Calendar = ({ clientList = [], setIsDraggingEvent, sidebarOpen, onShiftsLoaded }) => {
     const [currentView, setCurrentView] = useState("timeGridWeek");
     const calendarRef = useRef(null);
     const draggedEventRef = useRef(null);
     const hasLoadedOnce = useRef(false);
+
+    useEffect(() => {
+        if (calendarRef.current) {
+            const calendarApi = calendarRef.current.getApi();
+            if (calendarApi) {
+                calendarApi.updateSize();
+            }
+        }
+    }, [sidebarOpen]);
 
     const clientes = clientList.filter((client) => !client.esta_eliminado);
 

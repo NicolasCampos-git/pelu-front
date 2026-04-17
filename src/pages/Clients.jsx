@@ -337,6 +337,7 @@ const Clients = () => {
                 <Calendar
                     clientList={client}
                     setIsDraggingEvent={setIsDraggingEvent}
+                    sidebarOpen={sidebarOpen}
                     onShiftsLoaded={() =>
                         setDataLoaded((prev) => ({ ...prev, shifts: true }))
                     }
