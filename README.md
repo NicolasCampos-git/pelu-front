@@ -19,8 +19,23 @@ App de gestión de turnos y clientes para peluquería. Construida con React 19 +
 npm run dev       # Servidor de desarrollo
 npm run build     # Build de producción
 npm run preview   # Preview del build
+npm run start     # Start para Railway (usa PORT)
 npm run lint      # Linter
 ```
+
+## Deploy en Railway
+
+El proyecto ya incluye configuracion para deploy automatico en Railway con [railway.json](railway.json):
+
+- `build`: Nixpacks
+- `startCommand`: `npm run start`
+- Healthcheck en `/`
+
+### Variables de entorno en Railway
+
+- `VITE_URL_BACK`: URL publica del backend (por ejemplo `https://tu-backend.up.railway.app`)
+
+Importante: las variables `VITE_*` se inyectan durante el build. Si cambias `VITE_URL_BACK`, hace falta redeploy.
 
 ## PWA
 
