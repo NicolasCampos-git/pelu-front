@@ -39,6 +39,6 @@ En 401, el interceptor hace logout automatico.
 ## Notas
 
 - `usuario_id` se obtiene del JWT decodificado via `getUserId()`
-- Las fechas se envian en formato ISO 8601 (`.toISOString()`)
+- Las fechas se envian en formato ISO 8601 con timezone (ej: `2026-01-09T17:56:00-03:00` o `2026-01-09T20:56:00Z`)
 - El rango de carga de turnos es 1 mes atras a 11 meses adelante
 - Telefono siempre se envia con prefijo `+` (ej: `+5491112345678`)

@@ -66,15 +66,20 @@ const Calendar = ({ clientList = [], setIsDraggingEvent, sidebarOpen, onShiftsLo
             const elevenMonthsLater = new Date(today);
             elevenMonthsLater.setMonth(today.getMonth() + 11);
 
-            const formatDate = (date) => {
+            const formatDateWithTimezone = (date) => {
                 const year = date.getFullYear();
                 const month = String(date.getMonth() + 1).padStart(2, "0");
                 const day = String(date.getDate()).padStart(2, "0");
-                return `${year}-${month}-${day}`;
+                const tzOffset = -date.getTimezoneOffset();
+                const sign = tzOffset >= 0 ? "+" : "-";
+                const absOffset = Math.abs(tzOffset);
+                const tzHours = String(Math.floor(absOffset / 60)).padStart(2, "0");
+                const tzMinutes = String(absOffset % 60).padStart(2, "0");
+                return `${year}-${month}-${day}T00:00:00${sign}${tzHours}:${tzMinutes}`;
             };
 
-            const fecha_inicio = formatDate(oneMonthAgo);
-            const fecha_fin = formatDate(elevenMonthsLater);
+            const fecha_inicio = formatDateWithTimezone(oneMonthAgo);
+            const fecha_fin = formatDateWithTimezone(elevenMonthsLater);
 
             const response = await shiftsService.listarTurnos(
                 fecha_inicio,
