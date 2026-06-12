@@ -12,6 +12,7 @@ import showShiftDetails from "../utils/NotificationWindows/ShiftDetailsSidebar";
 import { promptCreateShift } from "../utils/NotificationWindows/ShiftFormPrompt";
 import confirmModify from "../utils/NotificationWindows/ConfirmModify";
 import AlertError from "../utils/NotificationWindows/AlertError";
+import { getServiceByColor } from "../utils/NotificationWindows/serviceOptions";
 import { promiseToast, showValidation } from "../utils/toastify/toastConfig";
 import { createDynamicMessage } from "../utils/toastify/toastMessages";
 
@@ -102,6 +103,9 @@ const Calendar = ({ clientList = [], setIsDraggingEvent, sidebarOpen, onShiftsLo
                     telefono: turno.cliente.telefono,
                     tomadoPor: turno.tomadoPor.nombre_completo,
                     service_color: turno.service_color,
+                    servicio_label:
+                        getServiceByColor(turno.service_color)?.label ||
+                        "Sin servicio",
                 },
                 editable: true,
             }));
@@ -523,6 +527,21 @@ const Calendar = ({ clientList = [], setIsDraggingEvent, sidebarOpen, onShiftsLo
                                 (handle) => (handle.style.display = "none")
                             );
                     }
+                }}
+                eventContent={(arg) => {
+                    const { title, extendedProps } = arg.event;
+                    const servicio = extendedProps.servicio_label;
+                    const obs = (extendedProps.observaciones || "").trim();
+                    const desc = obs.length > 30 ? obs.slice(0, 30) + "…" : obs;
+                    return (
+                        <div className="fc-custom-event">
+                            <div className="fc-custom-title">{title}</div>
+                            <div className="fc-custom-time">
+                                <span>{servicio}</span>
+                                {desc && <span> · {desc}</span>}
+                            </div>
+                        </div>
+                    );
                 }}
             />
         </div>
