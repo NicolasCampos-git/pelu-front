@@ -1,0 +1,5 @@
+[build]
+nixpkgs = "nixpkgs-24.11"
+
+[build.inputs]
+nodejs = "22.12.0"
